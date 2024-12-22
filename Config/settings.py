@@ -126,7 +126,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Telegram Bot token 
 
-BOT_TOKEN = "7859838072:AAGCMCX1IGO8dXjFF0V12kZOeNc6N6OKnqU"
+BOT_TOKEN = "7859838072:AAGmy_ctDoclup9OQnVjm6H9k2LtMWu2GMw"
 
 # CSRF Trusted 
 CSRF_TRUSTED_ORIGINS = ['https://ticker-symbolbot.onrender.com']
