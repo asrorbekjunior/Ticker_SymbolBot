@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0j!*-p_t$(n4^3(+5puxcg)ki@(!j3%csof!+%g!$+63dkm6)3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ticker-symbolbot.onrender.com']
 
 
 # Application definition
@@ -127,3 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Telegram Bot token 
 
 BOT_TOKEN = "7859838072:AAGCMCX1IGO8dXjFF0V12kZOeNc6N6OKnqU"
+
+# CSRF Trusted 
+CSRF_TRUSTED_ORIGINS = ['https://ticker-symbolbot.onrender.com']
+
