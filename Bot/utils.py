@@ -66,7 +66,7 @@ def get_average_abs_difference_with_percentage(ticker_symbol, percentage=3):
     except Exception as e:
         print(f"Ma'lumotlarni olishda xatolik yuz berdi: {e}")
         # Excel faylidan aksiyani o'chirish
-        remove_symbol_from_excel(ticker_symbol)
+        # remove_symbol_from_excel(ticker_symbol)
         return None, None
 
 
@@ -93,7 +93,7 @@ def check_if_difference_is_smaller_than_percentage(ticker_symbol, percentage=3):
     except Exception as e:
         print(f"Ma'lumotlarni olishda xatolik yuz berdi: {e}")
         # Excel faylidan aksiyani o'chirish
-        remove_symbol_from_excel(ticker_symbol)
+        # remove_symbol_from_excel(ticker_symbol)
         return None
 
 
