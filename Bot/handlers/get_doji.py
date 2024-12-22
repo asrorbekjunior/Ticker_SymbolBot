@@ -35,7 +35,7 @@ def get_doji(update: Update, context: CallbackContext):
     symbols = get_stock_symbol("Symbol.xlsx")
     for symbol in symbols:
         start_time = time.time()
-        # time.sleep(3.5)
+        time.sleep(2.5)
         # is_doji = get_average_abs_difference_with_percentage(symbol)
         tana =  check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
