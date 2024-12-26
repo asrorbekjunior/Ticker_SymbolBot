@@ -1,8 +1,10 @@
+import yfinance as yf
+import time
+import pandas as pd
 import openpyxl
 from Bot.models import TelegramUser
 from datetime import datetime
-import yfinance as yf
-import time
+from django.core.exceptions import ObjectDoesNotExist
 
 def save_telegram_user(user_data):
     user, created = TelegramUser.objects.update_or_create(
@@ -25,9 +27,6 @@ def is_avtive(user_id):
         return False
     
 
-import yfinance as yf
-import time
-import pandas as pd
 
 
 
@@ -107,4 +106,16 @@ def get_stock_symbol(file_path):
         data.append(row[0])
     return data
 
+
+def is_user_admin(user_id):
+    try:
+        user = TelegramUser.objects.get(user_id=user_id)
+        return user.is_admin
+    except ObjectDoesNotExist:
+        return False
+
+
+def today_new_users():
+    today_new_users = TelegramUser.get_today_new_users()
+    return today_new_users.count()
 

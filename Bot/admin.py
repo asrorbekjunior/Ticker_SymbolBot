@@ -8,12 +8,3 @@ class TelegramUserAdmin(admin.ModelAdmin):
     search_fields = ('user_id', 'first_name', 'last_name', 'username')
     readonly_fields = ('date_joined', 'last_active')
 
-    fieldsets = (
-        (None, {
-            'fields': ('user_id', 'first_name', 'last_name', 'username', 'status')
-        }),
-        ('Advanced options', {
-            'classes': ('collapse',),
-            'fields': ('extra_info', 'date_joined', 'last_active'),
-        }),
-    )

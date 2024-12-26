@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0j!*-p_t$(n4^3(+5puxcg)ki@(!j3%csof!+%g!$+63dkm6)3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['192.168.100.53']
 
 
 # Application definition
@@ -128,6 +128,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 BOT_TOKEN = "7859838072:AAGmy_ctDoclup9OQnVjm6H9k2LtMWu2GMw"
 
+# Aksiyalar symboli saqlangan fay
+
+SYMBOL_FILE = "Symbol.xlsx"
+
 # CSRF Trusted 
 CSRF_TRUSTED_ORIGINS = ['https://ticker-symbolbot.onrender.com']
 
+# Web sita url for Bot admin panel
+
+SITE_URL = 'https://127.0.0.1:8000'
+
+# HTTPS settings
+# SECURE_SSL_REDIRECT = True  # HTTP dan HTTPS ga avtomatik yo'naltirish
+# SECURE_HSTS_SECONDS = 31536000  # HSTS boshqaruvi (bir yil)
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Subdomenlar uchun ham HSTS
+# SECURE_HSTS_PRELOAD = True  # HSTS'ni preload qilish
+# SECURE_BROWSER_XSS_FILTER = True  # XSS himoya
+# SECURE_CONTENT_TYPE_NOSNIFF = True  # MIME turi tekshiruvi
+
+# CSRF_COOKIE_SECURE = True  # CSRF cookie faqat HTTPS orqali uzatiladi
+# SESSION_COOKIE_SECURE = True  
