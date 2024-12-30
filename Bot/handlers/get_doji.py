@@ -126,6 +126,27 @@ def get_volume(symbol):
         return None
 
 
+import yfinance as yf
+
+def get_stock_name(ticker):
+    """
+    Aksiyaning ticker kodiga asoslangan holda uning to'liq nomini qaytaradi.
+
+    Args:
+        ticker (str): Aksiyaning ticker kodi (masalan, "AAPL").
+
+    Returns:
+        str: Aksiyaning to'liq nomi yoki xato xabari.
+    """
+    try:
+        stock = yf.Ticker(ticker)
+        name = stock.info.get('longName', 'Nom topilmadi')
+        return name
+    except Exception as e:
+        return f"Xatolik yuz berdi: {str(e)}"
+
+
+
 def run_dojii(update: Update, context: CallbackContext):
     threading.Thread(target=get_doji, args=(update, context,), daemon=True).start()
 
@@ -159,7 +180,7 @@ def get_doji(update: Update, context: CallbackContext):
                 high_value = high_value.iloc[0]  # Birinchi qiymatni olish
             if isinstance(average, pd.Series):
                 average = average.iloc[0]  # Birinchi qiymatni olish
-            
+            ticker_name = get_stock_name(symbol)
             # Agar close_price Series bo'lsa, faqat bitta qiymatini olish
             if isinstance(close_price, pd.Series):
                 close_price = close_price.iloc[0]
@@ -170,15 +191,9 @@ def get_doji(update: Update, context: CallbackContext):
             print(formula)
             if pricee > 1 and formula > 1000000:
                 message = f"""
-<blockquote><b>Wal-Mart ({symbol}) Doji</b> ✅ </blockquote> 
-- <b>Hozirgi narx:</b> ${pricee:.2f}  
-- <b>Savdo hajmi (Volume):</b> {volume}
-- <b>1 oylik o'rtacha ko'rsatkich:</b> {average:.2f} 
-
----
-
-<b>CBOE Volatility Index (VIX)</b>  
-- <b>Hozirgi narx:</b> ${current_price:.2f}  
+<blockquote><b>{ticker_name} ({symbol}) Doji</b> ✅ </blockquote> 
+- <b>Current price:</b> ${pricee:.2f}  
+- <b>Volume:</b> {volume}
 
 ---
 
@@ -188,15 +203,9 @@ def get_doji(update: Update, context: CallbackContext):
 """
             else:
                 message = f"""
-<blockquote><b>Wal-Mart ({symbol}) Doji</b> ❌ </blockquote> 
-- <b>Hozirgi narx:</b> ${pricee:.2f}
-- <b>Savdo hajmi (Volume):</b> {volume}
-- <b>1 oylik o'rtacha ko'rsatkich:</b> {average:.2f}
-
----
-
-<b>CBOE Volatility Index (VIX)</b>  
-- <b>Hozirgi narx:</b> ${current_price:.2f}  
+<blockquote><b>{ticker_name} ({symbol}) Doji</b> ❌ </blockquote> 
+- <b>Current price:</b> ${pricee:.2f}
+- <b>Volume:</b> {volume}
 
 ---
 
