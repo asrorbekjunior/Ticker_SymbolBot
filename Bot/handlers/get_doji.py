@@ -137,7 +137,7 @@ def get_doji(update: Update, context: CallbackContext):
     
     for symbol in symbols:
         start_time = time.time()
-        time.sleep(3)
+        # time.sleep(3)
         tana = check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
         user_ids = TelegramUser.get_active_user_ids()
@@ -170,31 +170,39 @@ def get_doji(update: Update, context: CallbackContext):
             print(formula)
             if pricee > 1 and formula > 1000000:
                 message = f"""
-<blockquote>{symbol} Doji ✅</blockquote>
-<b>Current price: {pricee:.2f}
-Volume: {volume}
-Average: {average:.2f}
-——————————
-{name}:
-➥Current price: {current_price:.2f}
-——————————
-Stop Loss: {stop_loss:.2f}
-Take Profit: {take_profit:.2f}
-</b>
+<blockquote><b>Wal-Mart ({symbol}) Doji</b> ✅ </blockquote> 
+- <b>Hozirgi narx:</b> ${pricee:.2f}  
+- <b>Savdo hajmi (Volume):</b> {volume}
+- <b>1 oylik o'rtacha ko'rsatkich:</b> {average:.2f} 
+
+---
+
+<b>CBOE Volatility Index (VIX)</b>  
+- <b>Hozirgi narx:</b> ${current_price:.2f}  
+
+---
+
+<b>Savdo Tavsiyalari</b>  
+- <b>Stop Loss:</b> ${stop_loss:.2f}  
+- <b>Take Profit:</b> ${take_profit:.2f}  
 """
             else:
                 message = f"""
-<blockquote>{symbol} Doji ❌</blockquote>
-<b>Current price: {pricee:.2f}
-Volume: {volume}
-Average: {average:.2f}
-——————————
-{name}:
-➥Current price: {current_price:.2f}
-——————————
-Stop Loss: {stop_loss:.2f}
-Take Profit: {take_profit:.2f}
-</b>
+<blockquote><b>Wal-Mart ({symbol}) Doji</b> ❌ </blockquote> 
+- <b>Hozirgi narx:</b> ${pricee:.2f}
+- <b>Savdo hajmi (Volume):</b> {volume}
+- <b>1 oylik o'rtacha ko'rsatkich:</b> {average:.2f}
+
+---
+
+<b>CBOE Volatility Index (VIX)</b>  
+- <b>Hozirgi narx:</b> ${current_price:.2f}  
+
+---
+
+<b>Savdo Tavsiyalari</b>  
+- <b>Stop Loss:</b> ${stop_loss:.2f}  
+- <b>Take Profit:</b> ${take_profit:.2f}  
 """
 
             # Foydalanuvchilarga xabar yuborish
@@ -210,7 +218,7 @@ Take Profit: {take_profit:.2f}
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"{index}. Funksiya ishlash vaqti: {elapsed_time:.3f} soniya")
+        print(f"{index}. Funksiya ishlash vaqti: {elapsed_time:.2f} soniya")
     
     update.message.reply_text("Barcha aksiyalar tekshirib chiqildi!")
 

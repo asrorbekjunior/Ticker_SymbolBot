@@ -27,9 +27,6 @@ def is_avtive(user_id):
         return False
     
 
-
-
-
 def remove_symbol_from_excel(ticker_symbol):
     try:
         # Excel faylini o'qish (fayl nomini moslashtiring)
