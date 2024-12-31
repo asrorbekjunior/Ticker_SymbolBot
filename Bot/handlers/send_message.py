@@ -3,6 +3,7 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHa
 from telegram.error import TelegramError
 from Bot.models import TelegramUser
 from Bot.utils import is_user_admin
+from ..decorators import admin_required
 
 # Bosqichlarni belgilash
 ASK_TYPE, GET_MESSAGE = range(2)
@@ -20,6 +21,7 @@ def get_user_ids():
         return []
 
 # Admin uchun /send_message buyrug'i
+@admin_required
 def send_message(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     if is_user_admin(chat_id) is False:  # Adminni tekshirish
@@ -40,6 +42,7 @@ def send_message(update: Update, context: CallbackContext):
     return ASK_TYPE
 
 # Xabar turini qabul qilish
+@admin_required
 def ask_type(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()  # Callback tugmalarini ishlatishda javob berish
@@ -48,7 +51,9 @@ def ask_type(update: Update, context: CallbackContext):
     return GET_MESSAGE
 
 # Admin xabarni yuborganidan so'ng
+@admin_required
 def get_message(update: Update, context: CallbackContext):
+    admin_id = update.effective_user.id
     try:
         message_type = context.user_data.get('message_type')
         message_caption = update.message.caption_html if update.message.caption else ""
@@ -64,21 +69,39 @@ def get_message(update: Update, context: CallbackContext):
     for user_id in user_ids:
         try:
             if message_type == 'text':
-                context.bot.send_message(chat_id=user_id, text=update.message.text_html, parse_mode=ParseMode.HTML)
+                try:
+                    context.bot.send_message(chat_id=user_id, text=update.message.text_html, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")
             elif message_type == 'photo':
-                context.bot.send_photo(chat_id=user_id, photo=update.message.photo[-1].file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                try:
+                    context.bot.send_photo(chat_id=user_id, photo=update.message.photo[-1].file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
             elif message_type == 'video':
-                context.bot.send_video(chat_id=user_id, video=update.message.video.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                try:               
+                    context.bot.send_video(chat_id=user_id, video=update.message.video.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")           
             elif message_type == 'audio':
-                context.bot.send_audio(chat_id=user_id, audio=update.message.audio.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                try:                
+                    context.bot.send_audio(chat_id=user_id, audio=update.message.audio.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
             elif message_type == 'file':
-                context.bot.send_document(chat_id=user_id, document=update.message.document.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                try:                
+                    context.bot.send_document(chat_id=user_id, document=update.message.document.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
             elif message_type == 'voice':
-                context.bot.send_voice(chat_id=user_id, voice=update.message.voice.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                try:
+                    context.bot.send_voice(chat_id=user_id, voice=update.message.voice.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
+                except:
+                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")
 
             total_users += 1
-        except TelegramError as e:
-            print(f"Xatolik yuz berdi: {e}")
+        except:
+            print(f"Xatolik yuz berdi")
 
     # Adminga nechta foydalanuvchiga yuborilganini ko'rsatish
     update.message.reply_text(f"{total_users} ta foydalanuvchiga xabar yuborildi.")

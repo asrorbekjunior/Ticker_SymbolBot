@@ -6,7 +6,7 @@ from Bot.handlers.get_doji import run_dojii, start_doji_func
 from Bot.handlers.send_message import send_msg_handler
 from Bot.handlers.botstats import bot_stats
 from Bot.bot_admin.admin_menyu import admin_menu
-from Bot.bot_admin.add_admin import start_make_admin
+from Bot.bot_admin.add_admin import add_admin_handler
 import pytz
 
 
@@ -32,7 +32,7 @@ def run_bot():
     updater.dispatcher.add_handler(send_msg_handler)
     updater.dispatcher.add_handler(CommandHandler('Admin', admin_menu))
     updater.dispatcher.add_handler(CallbackQueryHandler(bot_stats, pattern=r'^botstats$'))
-    updater.dispatcher.add_handler(CallbackQueryHandler(start_make_admin, pattern="^add_admin$"))
+    updater.dispatcher.add_handler(add_admin_handler)
 
     updater.dispatcher.add_handler(MessageHandler(Filters.all, help_command))
     # Botni ishga tushirish

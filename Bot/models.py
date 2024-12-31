@@ -101,16 +101,14 @@ class TelegramUser(models.Model):
                 bot.send_chat_action(chat_id=user.user_id, action="typing")
                 sleep(0.1)  # Telegram API cheklovlarini e'tiborga olish
             except TelegramError as e:
+                print(e)
                 # Faqat botni bloklaganlar uchun statusni yangilash
-                if "bot was blocked by the user" in str(e) or "user is deactivated" in str(e):
-                    user.status = 'blocked'
-                    user.save(update_fields=['status'])
-                    blocked_users_count += 1
-                else:
-                    # Boshqa xatoliklar uchun log yaratish
-                    print(f"Error for user {user.user_id}: {e}")
+                user.status = 'blocked'
+                user.save(update_fields=['status'])
+                blocked_users_count += 1
 
         return blocked_users_count
+    
     @classmethod
     @transaction.atomic
     def make_admin(cls, user_id):

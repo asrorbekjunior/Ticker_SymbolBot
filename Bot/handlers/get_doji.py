@@ -152,6 +152,7 @@ def run_dojii(update: Update, context: CallbackContext):
 
 
 def get_doji(update: Update, context: CallbackContext):
+    user_ids = TelegramUser.get_active_user_ids()
     index = 0
     update.message.reply_text(text="Jarayon boshlandi...")
     symbols = get_stock_symbol(SYMBOL_FILE)
@@ -161,7 +162,6 @@ def get_doji(update: Update, context: CallbackContext):
         time.sleep(1.5)
         tana = check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
-        user_ids = TelegramUser.get_active_user_ids()
         
         if tana:
             # Volume-ni olish funksiyasini chaqirish
@@ -228,8 +228,11 @@ def get_doji(update: Update, context: CallbackContext):
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"{index}. Funksiya ishlash vaqti: {elapsed_time:.2f} soniya")
-    
-    update.message.reply_text("Barcha aksiyalar tekshirib chiqildi!")
+    for user_id in user_ids:
+        try:
+            context.bot.send_message(chat_id=user_id, text="Aksiyalarni tekshirish nihoyasiga yetdi!")
+        except TelegramError as e:
+            print(f"{user_id} ga yuborilmadi>>> {e}")
 
 
 def run_doji_thread(update: Update, context: CallbackContext):

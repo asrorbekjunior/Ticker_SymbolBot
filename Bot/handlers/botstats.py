@@ -2,12 +2,13 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from Bot.models import TelegramUser
 from Config.settings import BOT_TOKEN
+from ..decorators import admin_required
 
 def today_new_users():
     today_new_users = TelegramUser.get_today_new_users()
     return today_new_users.count()
 
-
+@admin_required
 def bot_stats(update: Update, context: CallbackContext):
     msg = update.callback_query
     msg.answer("Malumotlar yuklanmoqda...")

@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppI
 from telegram.ext import CallbackContext, ConversationHandler
 from Bot.utils import is_user_admin
 from Config.settings import SITE_URL
+from ..decorators import admin_required
 
 admin_keyboard_list = [
     [
@@ -12,13 +13,14 @@ admin_keyboard_list = [
         InlineKeyboardButton(text="👮‍♂️ Admin qo'shish", callback_data='add_admin'),
         InlineKeyboardButton(text="🙅‍♂️ Admin o'chirish", callback_data='delete_admin')
     ],
-    [
-        InlineKeyboardButton(text="🌐 Web Admin site", url=SITE_URL),
-        InlineKeyboardButton(text="📱 Web Admin app", web_app=WebAppInfo(url=SITE_URL))
-    ]
+    # [
+    #     InlineKeyboardButton(text="🌐 Web Admin site", url=SITE_URL),
+    #     InlineKeyboardButton(text="📱 Web Admin app", web_app=WebAppInfo(url=SITE_URL))
+    # ]
 ]
 Admin_keyboard = InlineKeyboardMarkup(admin_keyboard_list)
 
+@admin_required
 def admin_menu(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     is_admin = is_user_admin(user_id)
@@ -29,4 +31,4 @@ def admin_menu(update: Update, context: CallbackContext):
             parse_mode="HTML",
             reply_markup=Admin_keyboard
             )
-        return ConversationHandler.END
+    return ConversationHandler.END
