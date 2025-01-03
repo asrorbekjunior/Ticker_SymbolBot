@@ -1,13 +1,12 @@
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from Bot.utils import get_stock_symbol, check_if_difference_is_smaller_than_percentage
 import time
 from Config.settings import SYMBOL_FILE
 import threading
-# from datetime import time
 from telegram.error import TelegramError
 from Bot.models import TelegramUser
-from .test import analyze_stock, get_high_low_3_month, get_vix_info, calculate_close_minus_half_average
+from .test import analyze_stock, get_high_low_3_month, calculate_close_minus_half_average
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
@@ -150,68 +149,92 @@ def get_stock_name(ticker):
 def run_dojii(update: Update, context: CallbackContext):
     threading.Thread(target=get_doji, args=(update, context,), daemon=True).start()
 
-
 def get_doji(update: Update, context: CallbackContext):
     user_ids = TelegramUser.get_active_user_ids()
     index = 0
     update.message.reply_text(text="Jarayon boshlandi...")
     symbols = get_stock_symbol(SYMBOL_FILE)
-    
+
     for symbol in symbols:
         start_time = time.time()
         time.sleep(1.5)
         tana = check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
-        
+
         if tana:
-            # Volume-ni olish funksiyasini chaqirish
-            volume = get_volume(symbol)  # get_volume(symbol) funksiyasi orqali volume oling
+            volume = get_volume(symbol)
             average = analyze_stock(symbol)
             high_value, low_value = get_high_low_3_month(symbol)
             take_profit = TakeProfit(symbol, average)
-            # Aksiyaning bugungi yopilish narxini olish
             stock_data = yf.download(symbol, period="1d", interval="1m")
             if stock_data.empty:
                 continue
             close_price = stock_data['Close'].iloc[-1]
-            
-            # Agar high_value va average faqat bitta qiymat bo'lsa
+
             if isinstance(high_value, pd.Series):
-                high_value = high_value.iloc[0]  # Birinchi qiymatni olish
+                high_value = high_value.iloc[0]
             if isinstance(average, pd.Series):
-                average = average.iloc[0]  # Birinchi qiymatni olish
+                average = average.iloc[0]
             ticker_name = get_stock_name(symbol)
-            # Agar close_price Series bo'lsa, faqat bitta qiymatini olish
             if isinstance(close_price, pd.Series):
                 close_price = close_price.iloc[0]
-            name, current_price = get_vix_info()
             pricee = get_current_price(symbol)
             stop_loss = calculate_close_minus_half_average(symbol)
             formula = int(calculate_avg_volume_close_multiplier(symbol))
-            print(formula)
+            
+            # Industry va Description ma'lumotlarini olish
+            ticker = yf.Ticker(symbol)
+            industry = ticker.info.get('industry', 'Maʼlum emas')
+            description = ticker.info.get('longBusinessSummary', 'Tavsif mavjud emas.')
+            industry_url = f"https://finance.yahoo.com/industries/{industry.replace(' ', '-').lower()}"
+            
+            # Yangiliklarni olish
+            news = ticker.news[:3]  # Faqat 3 ta yangilikni olish
+            news_buttons = [
+                InlineKeyboardButton(
+                    text=item['title'][:50],  # Maksimal 50 belgidan iborat sarlavha
+                    url=item['link']
+                ) for item in news
+            ]
+            keyboard = InlineKeyboardMarkup([[button] for button in news_buttons])
+
             if pricee > 1 and formula > 1000000:
                 message = f"""
 <blockquote><b>{ticker_name} ({symbol}) Doji</b> ✅ </blockquote> 
 - <b>Current price:</b> ${pricee:.2f}  
-- <b>Volume:</b> {volume}
+- <b>Volume:</b> {volume}  
+- <b>Industry:</b> <a href="{industry_url}">{industry}</a>  
 
 ---
 
 <b>Savdo Tavsiyalari</b>  
 - <b>Stop Loss:</b> ${stop_loss:.2f}  
 - <b>Take Profit:</b> ${take_profit:.2f}  
+
+---
+<blockquote expandable>
+<b>Company Description:</b>  
+{description} 
+</blockquote>
 """
             else:
                 message = f"""
 <blockquote><b>{ticker_name} ({symbol}) Doji</b> ❌ </blockquote> 
-- <b>Current price:</b> ${pricee:.2f}
-- <b>Volume:</b> {volume}
+- <b>Current price:</b> ${pricee:.2f}  
+- <b>Volume:</b> {volume}  
+- <b>Industry:</b> <a href="{industry_url}">{industry}</a>  
 
 ---
 
 <b>Savdo Tavsiyalari</b>  
 - <b>Stop Loss:</b> ${stop_loss:.2f}  
 - <b>Take Profit:</b> ${take_profit:.2f}  
+
+---
+<blockquote expandable>
+<b>Company Description:</b>  
+{description} 
+</blockquote>
 """
 
             # Foydalanuvchilarga xabar yuborish
@@ -220,7 +243,9 @@ def get_doji(update: Update, context: CallbackContext):
                     context.bot.send_message(
                         chat_id=user_id,
                         text=message,
-                        parse_mode="HTML"
+                        parse_mode="HTML",
+                        reply_markup=keyboard,
+                        disable_web_page_preview=True
                     )
                 except TelegramError as e:
                     print(f"{user_id} - topilmadi>>> {e}")
