@@ -149,6 +149,7 @@ def get_stock_name(ticker):
 def run_dojii(update: Update, context: CallbackContext):
     threading.Thread(target=get_doji, args=(update, context,), daemon=True).start()
 
+
 def get_doji(update: Update, context: CallbackContext):
     user_ids = TelegramUser.get_active_user_ids()
     index = 0
@@ -181,18 +182,28 @@ def get_doji(update: Update, context: CallbackContext):
             pricee = get_current_price(symbol)
             stop_loss = calculate_close_minus_half_average(symbol)
             formula = int(calculate_avg_volume_close_multiplier(symbol))
-            
-            # Industry va Description ma'lumotlarini olish
+
+            # Sector va Industry ma'lumotlarini olish
             ticker = yf.Ticker(symbol)
+            sector = ticker.info.get('sector', 'Maʼlum emas')
             industry = ticker.info.get('industry', 'Maʼlum emas')
             description = ticker.info.get('longBusinessSummary', 'Tavsif mavjud emas.')
-            industry_url = f"https://finance.yahoo.com/industries/{industry.replace(' ', '-').lower()}"
-            
+
+            # URL yaratish
+            if sector != 'Maʼlum emas' and industry != 'Maʼlum emas':
+                sector_safe = sector.lower().replace(' ', '-').replace('&', 'and')
+                industry_safe = industry.lower().replace(' ', '-').replace('&', 'and')
+                industry_url = f"https://finance.yahoo.com/sectors/{sector_safe}/{industry_safe}"
+                sector_url = f"https://finance.yahoo.com/sectors/{sector_safe}"
+            else:
+                industry_url = "#"
+                sector_url = "#"
+
             # Yangiliklarni olish
-            news = ticker.news[:3]  # Faqat 3 ta yangilikni olish
+            news = ticker.news[:3]
             news_buttons = [
                 InlineKeyboardButton(
-                    text=item['title'][:50],  # Maksimal 50 belgidan iborat sarlavha
+                    text=item['title'][:50],
                     url=item['link']
                 ) for item in news
             ]
@@ -203,6 +214,7 @@ def get_doji(update: Update, context: CallbackContext):
 <blockquote><b>{ticker_name} ({symbol}) Doji</b> ✅ </blockquote> 
 - <b>Current price:</b> ${pricee:.2f}  
 - <b>Volume:</b> {volume}  
+- <b>Sector:</b> <a href="{sector_url}">{sector}</a>   
 - <b>Industry:</b> <a href="{industry_url}">{industry}</a>  
 
 ---
@@ -214,15 +226,16 @@ def get_doji(update: Update, context: CallbackContext):
 ---
 <blockquote expandable>
 <b>Company Description:</b>  
-{description} 
-</blockquote>
+{description}
+</blockquote>  
 """
             else:
                 message = f"""
 <blockquote><b>{ticker_name} ({symbol}) Doji</b> ❌ </blockquote> 
 - <b>Current price:</b> ${pricee:.2f}  
 - <b>Volume:</b> {volume}  
-- <b>Industry:</b> <a href="{industry_url}">{industry}</a>  
+- <b>Sector:</b> <a href="{sector_url}">{sector}</a>   
+- <b>Industry:</b> <a href="{industry_url}">{industry}</a>
 
 ---
 
@@ -233,7 +246,7 @@ def get_doji(update: Update, context: CallbackContext):
 ---
 <blockquote expandable>
 <b>Company Description:</b>  
-{description} 
+{description}  
 </blockquote>
 """
 
@@ -258,6 +271,7 @@ def get_doji(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=user_id, text="Aksiyalarni tekshirish nihoyasiga yetdi!")
         except TelegramError as e:
             print(f"{user_id} ga yuborilmadi>>> {e}")
+
 
 
 def run_doji_thread(update: Update, context: CallbackContext):
