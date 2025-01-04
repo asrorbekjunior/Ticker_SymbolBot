@@ -1,21 +1,19 @@
-import yfinance as yf
-from datetime import datetime
+import asyncio
+from googletrans import Translator
 
-# Aksiyaning tickerini tanlang
-ticker = yf.Ticker("AAPL")  # Apple Inc. misol
+async def translator_func(text):
+    translator = Translator()
 
-# Yangiliklar va sanoat ma'lumotlarini oling
-news = ticker.news
-industry = ticker.info.get('industry', 'Sanoat maʼlum emas')
+    translated = await translator.translate(text, dest="uz")
+    return translated.text
 
-# Natijani chop eting
-print(f"Aksiya Sanoati: {industry}")
-print("=" * 40)
+# Async funktsiyani ishga tushirish
+asyncio.run(translator_func())
 
-for item in news:
-    # Sana formatini o'zgartirish
-    readable_date = datetime.utcfromtimestamp(item['providerPublishTime']).strftime('%Y-%m-%d %H:%M:%S')
-    print(f"Sarlavha: {item['title']}")
-    print(f"Havola: {item['link']}")
-    print(f"Sana: {readable_date}")
-    print("-" * 40)
+
+# Natijani chop etish
+# print("Asl matn:", text_to_translate)
+# print("Tarjima qilingan matn:", translated.text)
+# print("Asl til:", translated.src)
+# print("Maqsadli til:", translated.dest)
+

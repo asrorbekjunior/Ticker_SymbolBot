@@ -10,6 +10,12 @@ from .test import analyze_stock, get_high_low_3_month, calculate_close_minus_hal
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
+import asyncio
+from googletrans import Translator
+
+
+
+
 
 def calculate_avg_volume_close_multiplier(ticker_symbol):
     """
@@ -150,6 +156,12 @@ def run_dojii(update: Update, context: CallbackContext):
     threading.Thread(target=get_doji, args=(update, context,), daemon=True).start()
 
 
+async def translator_func(text):
+    translator = Translator()
+
+    translated = await translator.translate(text, dest="uz")
+    return translated.text
+
 def get_doji(update: Update, context: CallbackContext):
     user_ids = TelegramUser.get_active_user_ids()
     index = 0
@@ -158,7 +170,7 @@ def get_doji(update: Update, context: CallbackContext):
 
     for symbol in symbols:
         start_time = time.time()
-        time.sleep(1.5)
+        # time.sleep(1.5)
         tana = check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
 
@@ -188,7 +200,7 @@ def get_doji(update: Update, context: CallbackContext):
             sector = ticker.info.get('sector', 'Maʼlum emas')
             industry = ticker.info.get('industry', 'Maʼlum emas')
             description = ticker.info.get('longBusinessSummary', 'Tavsif mavjud emas.')
-
+            uz_description = asyncio.run(translator_func(description))
             # URL yaratish
             if sector != 'Maʼlum emas' and industry != 'Maʼlum emas':
                 sector_safe = sector.lower().replace(' ', '-').replace('&', 'and')
@@ -226,7 +238,7 @@ def get_doji(update: Update, context: CallbackContext):
 ---
 <blockquote expandable>
 <b>Company Description:</b>  
-{description}
+{uz_description}
 </blockquote>  
 """
             else:
@@ -246,7 +258,7 @@ def get_doji(update: Update, context: CallbackContext):
 ---
 <blockquote expandable>
 <b>Company Description:</b>  
-{description}  
+{uz_description}  
 </blockquote>
 """
 
