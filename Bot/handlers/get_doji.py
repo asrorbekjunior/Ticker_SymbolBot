@@ -170,7 +170,7 @@ def get_doji(update: Update, context: CallbackContext):
 
     for symbol in symbols:
         start_time = time.time()
-        # time.sleep(1.5)
+        time.sleep(1.5)
         tana = check_if_difference_is_smaller_than_percentage(symbol)
         index += 1
 
