@@ -126,7 +126,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Telegram Bot token 
 
-BOT_TOKEN = "7768106867:AAHxiDzBRyPm4XwPxqnZpPErJn24rrTecT8"
+BOT_TOKEN = "7000580104:AAGuGagd2u6RfTKDdLwMW-Lshz4fn4b0iSk"
 
 # Aksiyalar symboli saqlangan fay
 

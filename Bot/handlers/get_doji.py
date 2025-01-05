@@ -162,8 +162,22 @@ async def translator_func(text):
     translated = await translator.translate(text, dest="uz")
     return translated.text
 
+def get_user_ids():
+    """
+    Barcha foydalanuvchilarning `user_id` maydonlarini ro'yxat sifatida qaytaradi.
+    """
+    try:
+        # Barcha user_id-larni olish
+        user_ids = list(TelegramUser.objects.values_list('user_id', flat=True))
+        return user_ids
+    except Exception as e:
+        print(f"Xatolik yuz berdi: {e}")
+        return []
+
+
+
 def get_doji(update: Update, context: CallbackContext):
-    user_ids = TelegramUser.get_active_user_ids()
+    user_ids = get_user_ids()
     index = 0
     update.message.reply_text(text="Jarayon boshlandi...")
     symbols = get_stock_symbol(SYMBOL_FILE)
@@ -177,20 +191,9 @@ def get_doji(update: Update, context: CallbackContext):
         if tana:
             volume = get_volume(symbol)
             average = analyze_stock(symbol)
-            high_value, low_value = get_high_low_3_month(symbol)
             take_profit = TakeProfit(symbol, average)
-            stock_data = yf.download(symbol, period="1d", interval="1m")
-            if stock_data.empty:
-                continue
-            close_price = stock_data['Close'].iloc[-1]
 
-            if isinstance(high_value, pd.Series):
-                high_value = high_value.iloc[0]
-            if isinstance(average, pd.Series):
-                average = average.iloc[0]
             ticker_name = get_stock_name(symbol)
-            if isinstance(close_price, pd.Series):
-                close_price = close_price.iloc[0]
             pricee = get_current_price(symbol)
             stop_loss = calculate_close_minus_half_average(symbol)
             formula = int(calculate_avg_volume_close_multiplier(symbol))

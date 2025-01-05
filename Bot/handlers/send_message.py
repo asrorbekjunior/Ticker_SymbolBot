@@ -25,7 +25,7 @@ def get_user_ids():
 def send_message(update: Update, context: CallbackContext):
     chat_id = update.effective_chat.id
     if is_user_admin(chat_id) is False:  # Adminni tekshirish
-        update.callback_query.edit_message_text("Sizni tushunmaadim")
+        update.callback_query.edit_message_text("Sizni tushunmadim")
         return ConversationHandler.END
 
     # Xabar turini tanlash uchun variantlar ['oddiy', 'photo', 'video', 'audio', 'file']
@@ -69,35 +69,17 @@ def get_message(update: Update, context: CallbackContext):
     for user_id in user_ids:
         try:
             if message_type == 'text':
-                try:
-                    context.bot.send_message(chat_id=user_id, text=update.message.text_html, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")
+                context.bot.send_message(chat_id=user_id, text=update.message.text_html, parse_mode=ParseMode.HTML)
             elif message_type == 'photo':
-                try:
-                    context.bot.send_photo(chat_id=user_id, photo=update.message.photo[-1].file_id, caption=message_caption, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
+                context.bot.send_photo(chat_id=user_id, photo=update.message.photo[-1].file_id, caption=message_caption, parse_mode=ParseMode.HTML)
             elif message_type == 'video':
-                try:               
-                    context.bot.send_video(chat_id=user_id, video=update.message.video.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")           
+                context.bot.send_video(chat_id=user_id, video=update.message.video.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
             elif message_type == 'audio':
-                try:                
-                    context.bot.send_audio(chat_id=user_id, audio=update.message.audio.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
+                context.bot.send_audio(chat_id=user_id, audio=update.message.audio.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
             elif message_type == 'file':
-                try:                
-                    context.bot.send_document(chat_id=user_id, document=update.message.document.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")            
+                context.bot.send_document(chat_id=user_id, document=update.message.document.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
             elif message_type == 'voice':
-                try:
-                    context.bot.send_voice(chat_id=user_id, voice=update.message.voice.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
-                except:
-                    context.bot.send_message(chat_id=admin_id, text="Qandaydir xatolik ro'y berdi\nIltimos qaytadan urining")
+                context.bot.send_voice(chat_id=user_id, voice=update.message.voice.file_id, caption=message_caption, parse_mode=ParseMode.HTML)
 
             total_users += 1
         except:
